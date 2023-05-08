@@ -23,7 +23,7 @@ if (!$tool.isResponse) {
         url = url.replace(/&languages=(.*?)&/, "&languages=en-US&");
     }
     url += "&path=" + encodeURIComponent(`[${videos[0]},"details"]`);
-    $done({ url });
+    $done({url});
 } else {
     var IMDbApikeys = IMDbApikeys();
     var IMDbApikey = $tool.read(imdbApikeyCacheKey);
@@ -59,7 +59,7 @@ if (!$tool.isResponse) {
             const awards = IMDb.msg.awards;
             const doubanRating = Douban.rating;
             const doubanKind = Douban.kind;
-            const message = `${awards.length > 0 ? awards + "\n": ""}${doubanKind}/${country}\n${IMDbrating}\n${doubanRating}${tomatoes.length > 0 ? "\n" + tomatoes + "\n" : "\n"}`;
+            const message = `${awards.length > 0 ? awards + "\n" : ""}${doubanKind}/${country}\n${IMDbrating}\n${doubanRating}${tomatoes.length > 0 ? "\n" + tomatoes + "\n" : "\n"}`;
             return message;
         }
         let msg = "";
@@ -69,14 +69,14 @@ if (!$tool.isResponse) {
             .finally(() => {
                 let summary = obj.value.videos[videoID].summary;
                 summary["supplementalMessage"] = `${msg}${summary && summary.supplementalMessage ? "\n" + summary.supplementalMessage : ""}`;
-                msg_obj = {"tagline":summary.supplementalMessage, "classification":"REGULAR"}
+                msg_obj = {"tagline": summary.supplementalMessage, "classification": "REGULAR"}
                 if (summary["supplementalMessages"]) {
                     summary["supplementalMessages"].push(msg_obj)
-                }else {
+                } else {
                     summary["supplementalMessages"] = [msg_obj]
                 }
                 if (consoleLog) console.log("Netflix Modified Body:\n" + JSON.stringify(obj));
-                $done({ body: JSON.stringify(obj) });
+                $done({body: JSON.stringify(obj)});
             });
     } else {
         $done({});
@@ -101,15 +101,15 @@ function requestDoubanRating(imdbId) {
             if (!error) {
                 if (consoleLog) console.log("Netflix Douban Rating Data:\n" + data);
                 if (response.status == 200) {
-                    const rating = get_douban_rating_message(data)[1];
-                    const kind = get_douban_rating_message(data)[0];
-                    resolve({ rating, kind });
+                    const rating = get_douban_rating_message(data).rating_message;
+                    const kind = get_douban_rating_message(data).type;
+                    resolve({rating, kind});
                 } else {
-                    resolve({ rating: "Douban:  " + errorTip().noData });
+                    resolve({rating: "Douban:  " + errorTip().noData});
                 }
             } else {
                 if (consoleLog) console.log("Netflix Douban Rating Error:\n" + error);
-                resolve({ rating: "Douban:  " + errorTip().error });
+                resolve({rating: "Douban:  " + errorTip().error});
             }
         });
     });
@@ -129,7 +129,7 @@ function requestIMDbRating(title, year, type) {
                     if (obj.Response != "False") {
                         const id = obj.imdbID;
                         const msg = get_IMDb_message(obj);
-                        resolve({ id, msg });
+                        resolve({id, msg});
                     } else {
                         reject(errorTip().noData);
                     }
@@ -185,15 +185,15 @@ function get_IMDb_message(data) {
         }
     }
     country_message = get_country_message(data.Country);
-    return { rating: rating_message, tomatoes: tomatoes_message, country: country_message, awards: awards_message }
+    return {rating: rating_message, tomatoes: tomatoes_message, country: country_message, awards: awards_message}
 }
 
 function get_douban_rating_message(data) {
     const s = data.replace(/\n| |&#\d{2}/g, '')
-    .match(/\[(\u7535\u5f71|\u7535\u89c6\u5267)\].+?subject-cast\">.+?<\/span>/g);
+        .match(/\[(\u7535\u5f71|\u7535\u89c6\u5267)\].+?subject-cast\">.+?<\/span>/g);
     const average = s ? s[0].split(/">(\d\.\d)</)[1] || '' : '';
     const numRaters = s ? s[0].split(/(\d+)\u4eba\u8bc4\u4ef7/)[1] || '' : '';
-    const type = s ? s[0].split("]</span>")[0].replace('[电影','🎬Film').replace('[电视剧','📺Series') || '' : '';
+    const type = s ? s[0].split("]</span>")[0].replace('[电影', '🎬Film').replace('[电视剧', '📺Series') || '' : '';
     const rating_message = `Douban:  ⭐️ ${average ? average + "/10" : "N/A"}   ${!numRaters ? "" : parseFloat(numRaters).toLocaleString()}`;
     const douban_info = {type, rating_message};
     return douban_info;
@@ -210,7 +210,7 @@ function get_country_message(data) {
 }
 
 function errorTip() {
-    return { noData: "⭐️ N/A", error: "❌ N/A" }
+    return {noData: "⭐️ N/A", error: "❌ N/A"}
 }
 
 function IMDbApikeys() {
@@ -512,7 +512,7 @@ function Tool() {
     _node = (() => {
         if (typeof require == "function") {
             const request = require('request')
-            return ({ request })
+            return ({request})
         } else {
             return (null)
         }
@@ -525,7 +525,7 @@ function Tool() {
     this.notify = (title, subtitle, message) => {
         if (_isQuanX) $notify(title, subtitle, message)
         if (_isSurge) $notification.post(title, subtitle, message)
-        if (_node) console.log(JSON.stringify({ title, subtitle, message }));
+        if (_node) console.log(JSON.stringify({title, subtitle, message}));
     }
     this.write = (value, key) => {
         if (_isQuanX) return $prefs.setValueForKey(value, key)
@@ -537,21 +537,33 @@ function Tool() {
     }
     this.get = (options, callback) => {
         if (_isQuanX) {
-            if (typeof options == "string") options = { url: options }
+            if (typeof options == "string") options = {url: options}
             options["method"] = "GET"
-            $task.fetch(options).then(response => { callback(null, _status(response), response.body) }, reason => callback(reason.error, null, null))
+            $task.fetch(options).then(response => {
+                callback(null, _status(response), response.body)
+            }, reason => callback(reason.error, null, null))
         }
-        if (_isSurge) $httpClient.get(options, (error, response, body) => { callback(error, _status(response), body) })
-        if (_node) _node.request(options, (error, response, body) => { callback(error, _status(response), body) })
+        if (_isSurge) $httpClient.get(options, (error, response, body) => {
+            callback(error, _status(response), body)
+        })
+        if (_node) _node.request(options, (error, response, body) => {
+            callback(error, _status(response), body)
+        })
     }
     this.post = (options, callback) => {
         if (_isQuanX) {
-            if (typeof options == "string") options = { url: options }
+            if (typeof options == "string") options = {url: options}
             options["method"] = "POST"
-            $task.fetch(options).then(response => { callback(null, _status(response), response.body) }, reason => callback(reason.error, null, null))
+            $task.fetch(options).then(response => {
+                callback(null, _status(response), response.body)
+            }, reason => callback(reason.error, null, null))
         }
-        if (_isSurge) $httpClient.post(options, (error, response, body) => { callback(error, _status(response), body) })
-        if (_node) _node.request.post(options, (error, response, body) => { callback(error, _status(response), body) })
+        if (_isSurge) $httpClient.post(options, (error, response, body) => {
+            callback(error, _status(response), body)
+        })
+        if (_node) _node.request.post(options, (error, response, body) => {
+            callback(error, _status(response), body)
+        })
     }
     _status = (response) => {
         if (response) {
