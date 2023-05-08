@@ -58,7 +58,8 @@ if (!$tool.isResponse) {
             const country = IMDb.msg.country;
             const awards = IMDb.msg.awards;
             const doubanRating = Douban.rating;
-            const message = `${awards.length > 0 ? awards + "\n": ""}${country}\n${IMDbrating}\n${doubanRating}${tomatoes.length > 0 ? "\n" + tomatoes + "\n" : "\n"}`;
+            const doubanKind = Douban.kind;
+            const message = `${awards.length > 0 ? awards + "\n": ""}${doubanKind}/${country}\n${IMDbrating}\n${doubanRating}${tomatoes.length > 0 ? "\n" + tomatoes + "\n" : "\n"}`;
             return message;
         }
         let msg = "";
@@ -100,8 +101,9 @@ function requestDoubanRating(imdbId) {
             if (!error) {
                 if (consoleLog) console.log("Netflix Douban Rating Data:\n" + data);
                 if (response.status == 200) {
-                    const rating = get_douban_rating_message(data);
-                    resolve({ rating });
+                    const rating = get_douban_rating_message(data)[1];
+                    const kind = get_douban_rating_message(data)[0];
+                    resolve({ rating, kind });
                 } else {
                     resolve({ rating: "Douban:  " + errorTip().noData });
                 }
@@ -191,9 +193,10 @@ function get_douban_rating_message(data) {
     .match(/\[(\u7535\u5f71|\u7535\u89c6\u5267)\].+?subject-cast\">.+?<\/span>/g);
     const average = s ? s[0].split(/">(\d\.\d)</)[1] || '' : '';
     const numRaters = s ? s[0].split(/(\d+)\u4eba\u8bc4\u4ef7/)[1] || '' : '';
-    const type = s ? s[0].split("]</span>")[0].replace('[','') || '' : '';
-    const rating_message = `Douban:  ⭐️ ${average ? average + "/10" : "N/A"}   ${!numRaters ? "" : parseFloat(numRaters).toLocaleString()}\n${type}`;
-    return rating_message;
+    const type = s ? s[0].split("]</span>")[0].replace('[电影','🎬Film').replace('[电视剧','📺Series') || '' : '';
+    const rating_message = `Douban:  ⭐️ ${average ? average + "/10" : "N/A"}   ${!numRaters ? "" : parseFloat(numRaters).toLocaleString()}`;
+    const douban_info = {type, rating_message};
+    return douban_info;
 }
 
 function get_country_message(data) {
