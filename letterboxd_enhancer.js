@@ -2,23 +2,24 @@
 README：https://github.com/yichahucha/surge/tree/master
  */
 
-const tmdb_api = '05902896074695709d7763505bb88b4d';
-
-
-const $tool = new Tool()
+const tmdb_api = "05902896074695709d7763505bb88b4d";
+const $tool = new Tool();
 const consoleLog = true;
 
 if ($tool.isResponse) {
     let obj = JSON.parse($response.body);
-    if (consoleLog) console.log("Letterboxd Original Body:\n" + $response.body);
+    if (consoleLog) {
+        console.log("Letterboxd Original Body:\n" + $response.body);
+    }
     if (obj.contributions[0].type === "Director") {
         const dir_tmdbid = obj.contributions[0].contributors[0].tmdbid;
-        const requestRatings = async () => {
-            const dir_zh = await requestDirZH(dir_tmdbid);
+        const requestDir = async () => {
+            const dir_zh_info = await requestDirZH(dir_tmdbid);
+            const dir_zh = dir_zh_info.dir_zh_name;
             return dir_zh;
         };
         let msg = "";
-        requestRatings()
+        requestDir()
             .then(dir_zh => msg = dir_zh)
             .catch(error => msg = error + "\n")
             .finally(() => {
@@ -131,20 +132,31 @@ function getZhName(also_known_as) {
 
 function requestDirZH(dir_tmdbid) {
     return new Promise(function (resolve, reject) {
-        const url = `https://api.themoviedb.org/3/person/${dir_tmdbid}?api_key=${tmdb_api}`;
-        if (consoleLog) console.log("Director TMDb API URL:\n" + url);
-        $tool.get(url, function (error, data) {
+        const dir_url = "https://api.themoviedb.org/3/person/" + dir_tmdbid + "?api_key=" + tmdb_api;
+        if (consoleLog) {
+            console.log("Director TMDb API URL:\n" + dir_url);
+        }
+        $tool.get(dir_url, function (error, response, data) {
             if (!error) {
-                if (consoleLog) console.log("Director TMDb API Data:\n" + data);
-                const dir_aka_name = data.also_known_as;
-                const dir_zh_name = getZhName(dir_aka_name).replace(' ', '');
-                resolve(dir_zh_name);
+                const tmdb_data = JSON.parse(data);
+                if (tmdb_data.also_known_as) {
+                    const dir_aka_name = tmdb_data.also_known_as;
+                    const dir_zh_name = getZhName(dir_aka_name).replace(' ', '');
+                    const zh_aka = "name";
+                    resolve({dir_zh_name, zh_aka});
+                } else {
+                    reject(errorTip().noData);
+                }
             } else {
                 if (consoleLog) console.log("Director TMDb API Data:\n" + error);
                 reject(errorTip().error);
             }
         });
     });
+}
+
+function errorTip() {
+    return {noData: "⭐️ N/A", error: "❌ N/A"}
 }
 
 function Tool() {
