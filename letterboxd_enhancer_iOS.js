@@ -6,35 +6,33 @@ const tmdb_api = '05902896074695709d7763505bb88b4d';
 
 
 const $tool = new Tool()
-const consoleLog = false;
-const imdbApikeyCacheKey = "ImdbApikeyCacheKey";
-const netflixTitleCacheKey = "NetflixTitleCacheKey";
+const consoleLog = true;
+
 const dir_tmdbid = obj.contributions[0].contributors[0].tmdbid;
 
-var IMDbApikeys = IMDbApikeys();
-var IMDbApikey = $tool.read(imdbApikeyCacheKey);
-if (!IMDbApikey) updateIMDbApikey();
-let obj = JSON.parse($response.body);
-if (consoleLog) console.log("Letterboxd Original Body:\n" + $response.body);
-if (obj.contributions[0].type === "Director") {
+if ($tool.isResponse) {
+    let obj = JSON.parse($response.body);
+    if (consoleLog) console.log("Letterboxd Original Body:\n" + $response.body);
+    if (obj.contributions[0].type === "Director") {
 
-    const requestRatings = async () => {
-        const dir_zh = await requestDirZH(dir_tmdbid);
-        return dir_zh;
-    };
-    let msg = "";
-    requestRatings()
-        .then(dir_zh => msg = dir_zh)
-        .catch(error => msg = error + "\n")
-        .finally(() => {
-            let dir_en_name = obj.contributions[0].contributors[0].name;
-            let dir_info = obj.contributions[0].contributors[0];
-            dir_info["name"] = `${msg} ${dir_en_name}`;
-            if (consoleLog) console.log("Netflix Modified Body:\n" + JSON.stringify(obj));
-            $done({body: JSON.stringify(obj)});
-        });
-} else {
-    $done({});
+        const requestRatings = async () => {
+            const dir_zh = await requestDirZH(dir_tmdbid);
+            return dir_zh;
+        };
+        let msg = "";
+        requestRatings()
+            .then(dir_zh => msg = dir_zh)
+            .catch(error => msg = error + "\n")
+            .finally(() => {
+                let dir_en_name = obj.contributions[0].contributors[0].name;
+                let dir_info = obj.contributions[0].contributors[0];
+                dir_info["name"] = `${msg} ${dir_en_name}`;
+                if (consoleLog) console.log("Netflix Modified Body:\n" + JSON.stringify(obj));
+                $done({body: JSON.stringify(obj)});
+            });
+    } else {
+        $done({});
+    }
 }
 
 function getZhName(also_known_as) {
