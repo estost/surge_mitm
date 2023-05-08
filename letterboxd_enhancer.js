@@ -11,11 +11,31 @@ if ($tool.isResponse) {
     if (consoleLog) {
         console.log("Letterboxd Original Body:\n" + $response.body);
     }
+
+    if (obj.links[1].type === "tmdb") {
+        const tmdb_id = obj.links[1].id;
+        const requestZH = async () => {
+            const title_zh = await requestTitleZH(tmdb_id);
+            return title_zh;
+        };
+        let msg = "";
+        requestZH()
+            .then(title_zh => msg = title_zh)
+            .catch(error => msg = error + "\n")
+            .finally(() => {
+                let title_re = msg + " " + obj.originalName;
+                obj["originalName"] = title_re;
+                if (consoleLog) console.log("Letterboxd TMDB Body:\n" + JSON.stringify(obj));
+                $done({body: JSON.stringify(obj)});
+            });
+    } else {
+        $done({});
+    }
+
     if (obj.contributions[0].type === "Director") {
         const dir_tmdbid = obj.contributions[0].contributors[0].tmdbid;
         const requestDir = async () => {
-            const dir_zh_info = await requestDirZH(dir_tmdbid);
-            const dir_zh = dir_zh_info.dir_zh_name;
+            const dir_zh = await requestDirZH(dir_tmdbid);
             return dir_zh;
         };
         let msg = "";
@@ -130,6 +150,29 @@ function getZhName(also_known_as) {
     return return_name.replace('（dorama.info）', '').replace('（旧芸名）', '').replace('（本名）', '');
 }
 
+function requestTitleZH(tmdb_id) {
+    return new Promise(function (resolve, reject) {
+        const title_url = "https://api.themoviedb.org/3/movie/" + tmdb_id + "?api_key=" + tmdb_api + "&language=zh-CN";
+        if (consoleLog) {
+            console.log("Director TMDb API URL:\n" + title_url);
+        }
+        $tool.get(title_url, function (error, response, data) {
+            if (!error) {
+                const tmdb_zh_data = JSON.parse(data);
+                let tmdb_zh_title = tmdb_zh_data.title;
+                if (tmdb_zh_title) {
+                    resolve(tmdb_zh_title);
+                } else {
+                    reject(errorTip().noData);
+                }
+            } else {
+                if (consoleLog) console.log("ZHTitle TMDb API Data:\n" + error);
+                reject(errorTip().error);
+            }
+        });
+    });
+}
+
 function requestDirZH(dir_tmdbid) {
     return new Promise(function (resolve, reject) {
         const dir_url = "https://api.themoviedb.org/3/person/" + dir_tmdbid + "?api_key=" + tmdb_api;
@@ -142,8 +185,7 @@ function requestDirZH(dir_tmdbid) {
                 if (tmdb_data.also_known_as) {
                     const dir_aka_name = tmdb_data.also_known_as;
                     const dir_zh_name = getZhName(dir_aka_name).replace(' ', '');
-                    const zh_aka = "name";
-                    resolve({dir_zh_name, zh_aka});
+                    resolve(dir_zh_name);
                 } else {
                     reject(errorTip().noData);
                 }
