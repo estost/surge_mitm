@@ -10,7 +10,7 @@ if ($tool.isResponse) {
             const Douban = await requestDoubanInfo(imdb_id);
             const film_zh = Douban.film_zh_title;
             const dir_zh = Douban.dir_zh_name;
-            const data_zh = film_zh + "|" +dir_zh;
+            const data_zh = film_zh + "|" + dir_zh;
             return data_zh;
         };
         let msg = "";
@@ -22,7 +22,7 @@ if ($tool.isResponse) {
                 let chi_dir = msg.split('|')[1];
                 let oriName = obj.originalName;
                 let re_name = `${chi_name} ${oriName}`;
-                
+
                 if (obj["originalName"]) {
                     if (obj.languages[0].name !== 'Chinese' && obj.languages[0].name !== 'Cantonese' && !hasJapanese(chi_name)) {
                         if (obj.languages[0].name !== 'Japanese' || hasJapanese(oriName)) {
@@ -59,25 +59,25 @@ function requestDoubanInfo(imdbId) {
                     const douban_data = get_douban_info(data);
                     resolve(douban_data);
                 } else {
-                    resolve({ rating: "Douban:  " + errorTip().noData });
+                    resolve({rating: "Douban:  " + errorTip().noData});
                 }
             } else {
                 if (consoleLog) console.log("Letterboxd Douban Error:\n" + error);
-                resolve({ rating: "Douban:  " + errorTip().error });
+                resolve({rating: "Douban:  " + errorTip().error});
             }
         });
     });
 }
 
 function get_douban_info(data) {
-    const s = data.replace(/\n| |&#\d{2}/g, '')
-    .match(/\[(\u7535\u5f71|\u7535\u89c6\u5267)\].+?subject-cast\">.+?<\/span>/g);
-    const sStr = JSON.stringify(s);
-    const tit_match = sStr ? sStr.match(/<a[^>]+>([^<]+)<\/a>/) : null;
-    const dir_match = sStr ? sStr.match(/>\s*\u539f\u540d\s*:\s*([^/]+)\/\s*([^/]+)\s*\/\s*([^/]+)\s*\/\s*(\d{4})/) : null;
-    let film_zh_title = "";
-    let dir_zh_name = "";
-    if (!sStr.match("\u6CA1\u6709\u627E\u5230\u4E0E")) {
+    let film_zh_title = '';
+    let dir_zh_name = '';
+    if (!data.match("\u6CA1\u6709\u627E\u5230\u4E0E")) {
+        const s = data.replace(/\n| |&#\d{2}/g, '')
+            .match(/\[(\u7535\u5f71|\u7535\u89c6\u5267)\].+?subject-cast\">.+?<\/span>/g);
+        const sStr = JSON.stringify(s);
+        const tit_match = sStr ? sStr.match(/<a[^>]+>([^<]+)<\/a>/) : null;
+        const dir_match = sStr ? sStr.match(/>\s*\u539f\u540d\s*:\s*([^/]+)\/\s*([^/]+)\s*\/\s*([^/]+)\s*\/\s*(\d{4})/) : null;
         film_zh_title = tit_match[1].trim();
         dir_zh_name = dir_match[2].trim();
     }
@@ -86,8 +86,8 @@ function get_douban_info(data) {
 }
 
 function hasJapanese(str) {
-        var regExp = /[\u3040-\u309F\u30A0-\u30FF]/g;
-        return regExp.test(str);
+    var regExp = /[\u3040-\u309F\u30A0-\u30FF]/g;
+    return regExp.test(str);
 }
 
 function errorTip() {
