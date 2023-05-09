@@ -3,45 +3,44 @@ README：https://github.com/yichahucha/surge/tree/master
  */
 
 const $tool = new Tool();
-const consoleLog = false;
 
-if ($tool.isResponse) {
-    let obj = JSON.parse($response.body);
-    if (consoleLog) console.log("Letterboxd Original Body:\n" + $response.body);
-    if (obj.links[2].type === "imdb") {
-        const imdb_id = obj.links[2].id;
 
-        const requestZhInfo = async () => {
-            const Douban = await requestDoubanInfo(imdb_id);
-            return Douban;
-        }
-        let dou = "";
-        requestZhInfo()
-            .then(Douban => dou = Douban)
-            .catch(error => dou = error + "\n")
-            .finally(() => {
-                let chi_tit = Douban.film_zh;
-                let chi_dir = Douban.dir_zh;
-                let Director = obj.contributions[0].contributors[0];
-                let oriName = obj.originalName;
-                if (obj["originalName"]) {
-                    obj["originalName"] = `${chi_tit} ${oriName}`;
-                } else {
-                    obj["originalName"] = `${chi_tit}`;
-                }
-                Director["name"] = `${chi_dir} ${Director.name}`;
-                if (consoleLog) console.log("Letterboxd Modified Body:\n" + JSON.stringify(obj));
-                $done({body: JSON.stringify(obj)});
-            });
-    } else {
-        $done({});
+let obj = JSON.parse($response.body);
+console.log("Letterboxd Original Body:\n" + $response.body);
+if (obj.links[2].type === "imdb") {
+    const imdb_id = obj.links[2].id;
+
+    const requestZhInfo = async () => {
+        const Douban = await requestDoubanInfo(imdb_id);
+        return Douban;
     }
+    let dou = "";
+    requestZhInfo()
+        .then(Douban => dou = Douban)
+        .catch(error => dou = error + "\n")
+        .finally(() => {
+            let chi_tit = Douban.film_zh;
+            let chi_dir = Douban.dir_zh;
+            let Director = obj.contributions[0].contributors[0];
+            let oriName = obj.originalName;
+            if (obj["originalName"]) {
+                obj["originalName"] = `${chi_tit} ${oriName}`;
+            } else {
+                obj["originalName"] = `${chi_tit}`;
+            }
+            Director["name"] = `${chi_dir} ${Director.name}`;
+            console.log("Letterboxd Modified Body:\n" + JSON.stringify(obj));
+            $done({body: JSON.stringify(obj)});
+        });
+} else {
+    $done({});
 }
+
 
 function requestDoubanInfo(imdb_id) {
     return new Promise(function (resolve, reject) {
         const url = `https://www.douban.com/search?cat=1002&q=${imdb_id}`;
-        if (consoleLog) console.log("Netflix Douban Rating URL:\n" + url);
+        console.log("Netflix Douban Rating URL:\n" + url);
         $tool.get(url, function (error, response, data) {
             if (!error) {
                 if (consoleLog) console.log("Letterboxd Douban Data:\n" + data);
@@ -53,7 +52,7 @@ function requestDoubanInfo(imdb_id) {
                     resolve({rating: "Douban:  " + errorTip().noData});
                 }
             } else {
-                if (consoleLog) console.log("Letterboxd Douban Rating Error:\n" + error);
+                console.log("Letterboxd Douban Rating Error:\n" + error);
                 resolve({rating: "Douban:  " + errorTip().error});
             }
         });
@@ -61,11 +60,12 @@ function requestDoubanInfo(imdb_id) {
 }
 
 function get_douban_zh_info(data) {
-    const s = data.replace(/\n| |&#\d{2}/g, '')
+    const s = String(data).replace(/\n| |&#\d{2}/g, '')
         .match(/\[(\u7535\u5f71|\u7535\u89c6\u5267)\].+?subject-cast\">.+?<\/span>/g);
-    const tit_match = s ? s.match(/<a[^>]+>([^<]+)<\/a>/);
+    const sStr = JSON.stringify(s);
+    const tit_match = sStr ? sStr.match(/<a[^>]+>([^<]+)<\/a>/);
     const film_zh_title = tit_match[1].trim();
-    const dir_match = s ? s.match(/>\s*\u539f\u540d\s*:\s*([^/]+)\/\s*([^/]+)\s*\/\s*([^/]+)\s*\/\s*(\d{4})/);
+    const dir_match = sStr ? sStr.match(/>\s*\u539f\u540d\s*:\s*([^/]+)\/\s*([^/]+)\s*\/\s*([^/]+)\s*\/\s*(\d{4})/);
     const dir_zh_name = dir_match[2].trim();
     const douban_info = {film_zh_title, dir_zh_name};
     return douban_info;
@@ -92,7 +92,7 @@ function Tool() {
     this.notify = (title, subtitle, message) => {
         if (_isQuanX) $notify(title, subtitle, message)
         if (_isSurge) $notification.post(title, subtitle, message)
-        if (_node) console.log(JSON.stringify({title, subtitle, message}));
+        console.log(JSON.stringify({title, subtitle, message}));
     }
     this.write = (value, key) => {
         if (_isQuanX) return $prefs.setValueForKey(value, key)
