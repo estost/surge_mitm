@@ -63,9 +63,9 @@ function get_douban_zh_info(data) {
     const s = String(data).replace(/\n| |&#\d{2}/g, '')
         .match(/\[(\u7535\u5f71|\u7535\u89c6\u5267)\].+?subject-cast\">.+?<\/span>/g);
     const sStr = JSON.stringify(s);
-    const tit_match = sStr ? sStr.match(/<a[^>]+>([^<]+)<\/a>/);
+    const tit_match = sStr ? sStr.match(/<a[^>]+>([^<]+)<\/a>/) : null;
     const film_zh_title = tit_match[1].trim();
-    const dir_match = sStr ? sStr.match(/>\s*\u539f\u540d\s*:\s*([^/]+)\/\s*([^/]+)\s*\/\s*([^/]+)\s*\/\s*(\d{4})/);
+    const dir_match = sStr ? sStr.match(/>\s*\u539f\u540d\s*:\s*([^/]+)\/\s*([^/]+)\s*\/\s*([^/]+)\s*\/\s*(\d{4})/) : null;
     const dir_zh_name = dir_match[2].trim();
     const douban_info = {film_zh_title, dir_zh_name};
     return douban_info;
