@@ -1,17 +1,10 @@
-/*
-README：https://github.com/yichahucha/surge/tree/master
- */
-
 const $tool = new Tool();
-const consoleLog = true;
+const consoleLog = false;
 
 if ($tool.isResponse) {
     let obj = JSON.parse($response.body);
-    if (consoleLog) {
-        console.log("Letterboxd Original Body:\n" + $response.body);
-    }
-    if (obj.contributions[0].type === "Director") {
-        const dir_tmdbid = obj.contributions[0].contributors[0].tmdbid;
+    if (consoleLog) console.log("Letterboxd Original Body:\n" + $response.body);
+    if (obj.links[2].type === "imdb") {
         const imdb_id = obj.links[2].id;
         const requestZH = async () => {
             const Douban = await requestDoubanInfo(imdb_id);
