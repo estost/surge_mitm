@@ -13,7 +13,7 @@ if ($tool.isResponse) {
     }
     if (obj.contributions[0].type === "Director") {
         const dir_tmdbid = obj.contributions[0].contributors[0].tmdbid;
-        const imdb_id = obj.link[2].id;
+        const imdb_id = obj.links[2].id;
         const requestDir = async () => {
             const dir_zh_info = await requestDirZH(dir_tmdbid);
             const Douban = await requestDoubanRating(imdb_id);
