@@ -2,7 +2,7 @@
 README：https://github.com/yichahucha/surge/tree/master
  */
 
-const tmdb_api = "05902896074695709d7763505bb88b4d";
+const tmdb_api = "xxxx";
 const $tool = new Tool();
 const consoleLog = true;
 
