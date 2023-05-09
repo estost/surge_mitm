@@ -3,6 +3,6 @@
 #!icon=https://letterboxd.com/favicon.ico
 [Script]
 api\.letterboxd\.com/api/v0/film/
-中文增强显示与搜索=type=http-response,pattern=^https?://api\.letterboxd\.com/api/v0/film/[a-zA-Z0-9]+\?apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+,requires-body=1,script-path=https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_cer.js, requires-body=true, timeout=10
+中文增强显示与搜索=type=http-response,pattern=^https?://api\.letterboxd\.com/api/v0/film/[a-zA-Z0-9]+\?apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+,requires-body=1,script-path=https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_zh.js, requires-body=true, timeout=10
 [MITM]
 hostname = %APPEND% api.letterboxd.com
