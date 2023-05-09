@@ -55,7 +55,9 @@ if ($tool.isResponse) {
                 if (consoleLog) console.log("Netflix Modified Body:\n" + JSON.stringify(obj));
                 $done({body: JSON.stringify(obj)});
             });
-    }
+    } else {
+    $done({});
+}
 }
 
 function requestDoubanRating(imdbId) {
