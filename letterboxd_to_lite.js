@@ -24,7 +24,7 @@ if ($tool.isResponse) {
                 let re_name = `${chi_name} ${oriName}`;
 
                 if (obj["originalName"]) {
-                    if (obj.languages[0].name !== 'Chinese' && obj.languages[0].name !== 'Cantonese' && !hasJapanese(chi_name)) {
+                    if (obj.languages[0].name !== 'Chinese' && obj.languages[0].name !== 'Cantonese' && !hasJapanese(chi_name) && hasChinese(chi_name)) {
                         if (obj.languages[0].name !== 'Japanese' || hasJapanese(oriName)) {
                             if (re_name.length > 22) {
                                 obj["originalName"] = `${chi_name}\n${oriName}`;
@@ -39,7 +39,9 @@ if ($tool.isResponse) {
 
                 let dir_en_name = obj.contributions[0].contributors[0].name;
                 let dir_info = obj.contributions[0].contributors[0];
-                dir_info["name"] = `${chi_dir} ${dir_en_name}`;
+                if (hasChinese(chi_dir)) {
+                    dir_info["name"] = `${chi_dir} ${dir_en_name}`;
+                }
                 if (consoleLog) console.log("Letterboxd Modified Body:\n" + JSON.stringify(obj));
                 $done({body: JSON.stringify(obj)});
             });
@@ -78,8 +80,8 @@ function get_douban_info(data) {
         const sStr = JSON.stringify(s);
         const tit_match = sStr ? sStr.match(/<a[^>]+>([^<]+)<\/a>/) : null;
         const dir_match = sStr ? sStr.match(/>\s*\u539f\u540d\s*:\s*([^/]+)\/\s*([^/]+)\s*\/\s*([^/]+)\s*\/\s*(\d{4})/) : null;
-        film_zh_title = tit_match[1].trim();
-        dir_zh_name = dir_match[2].trim();
+        if (tit_match) film_zh_title = tit_match[1].trim();
+        if (dir_match) dir_zh_name = dir_match[2].trim();
     }
     let douban_info = {film_zh_title, dir_zh_name};
     return douban_info;
@@ -87,6 +89,11 @@ function get_douban_info(data) {
 
 function hasJapanese(str) {
     var regExp = /[\u3040-\u309F\u30A0-\u30FF]/g;
+    return regExp.test(str);
+}
+
+function hasChinese(str) {
+    var regExp = /[\u4E00-\u9FA5\u4E00-\u9FFF]/g;
     return regExp.test(str);
 }
 
