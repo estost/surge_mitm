@@ -11,12 +11,16 @@ if ($tool.isResponse) {
     if (consoleLog) {
         console.log("Letterboxd Original Body:\n" + $response.body);
     }
-    if (obj.contributions[0].type === "Director") {
-        const dir_tmdbid = obj.contributions[0].contributors[0].tmdbid;
+    if (obj.links[2].type === "tmdb") {
         const imdb_id = obj.links[2].id;
         const requestZH = async () => {
-            const Douban = await requestDoubanRating(imdb_id);
-            const film_zh = Douban.film_zh_title;
+            const Douban = await requestDoubanInfo(imdb_id);
+            let film_zh = Douban.film_zh_title;
+            if (obj.languages[0].name === "Chinese" || "Cantonese") {
+                film_zh = "";
+            } else if (obj.languages[0].name === "Japanese" && hasJapanese(film_zh)) {
+                film_zh = "";
+            }
             const dir_zh = Douban.dir_zh_name;
             const data_zh = film_zh + "|" +dir_zh;
             return data_zh;
@@ -28,10 +32,15 @@ if ($tool.isResponse) {
             .finally(() => {
                 let chi_name = msg.split('|')[0];
                 let chi_dir = msg.split('|')[1];
-                
+
                 let oriName = obj.originalName;
                 if (obj["originalName"]) {
-                    obj["originalName"] = `${chi_name} ${oriName}`;
+                    const re_name = `${chi_name} ${oriName}`;
+                    if (chi_name && re_name.length > 22) {
+                        obj["originalName"] = `${chi_name}\n${oriName}`;
+                    } else if (chi_name) {
+                        obj["originalName"] = `${re_name}`;
+                    }
                 } else {
                     obj["originalName"] = `${chi_name}`;
                 }
@@ -39,7 +48,7 @@ if ($tool.isResponse) {
                 let dir_en_name = obj.contributions[0].contributors[0].name;
                 let dir_info = obj.contributions[0].contributors[0];
                 dir_info["name"] = `${chi_dir} ${dir_en_name}`;
-                if (consoleLog) console.log("Netflix Modified Body:\n" + JSON.stringify(obj));
+                if (consoleLog) console.log("Letterboxd Modified Body:\n" + JSON.stringify(obj));
                 $done({body: JSON.stringify(obj)});
             });
     } else {
@@ -47,28 +56,28 @@ if ($tool.isResponse) {
     }
 }
 
-function requestDoubanRating(imdbId) {
+function requestDoubanInfo(imdbId) {
     return new Promise(function (resolve, reject) {
         const url = `https://www.douban.com/search?cat=1002&q=${imdbId}`;
-        if (consoleLog) console.log("Netflix Douban Rating URL:\n" + url);
+        if (consoleLog) console.log("Letterboxd Douban URL:\n" + url);
         $tool.get(url, function (error, response, data) {
             if (!error) {
-                if (consoleLog) console.log("Netflix Douban Rating Data:\n" + data);
+                if (consoleLog) console.log("Letterboxd Douban Data:\n" + data);
                 if (response.status == 200) {
-                    const douban_data = get_douban_rating_message(data);
+                    const douban_data = get_douban_info(data);
                     resolve(douban_data);
                 } else {
-                    resolve({ rating: "Douban:  " + errorTip().noData });
+                    resolve("");
                 }
             } else {
-                if (consoleLog) console.log("Netflix Douban Rating Error:\n" + error);
-                resolve({ rating: "Douban:  " + errorTip().error });
+                if (consoleLog) console.log("Letterboxd Douban Error:\n" + error);
+                resolve("");
             }
         });
     });
 }
 
-function get_douban_rating_message(data) {
+function get_douban_info(data) {
     const s = data.replace(/\n| |&#\d{2}/g, '')
     .match(/\[(\u7535\u5f71|\u7535\u89c6\u5267)\].+?subject-cast\">.+?<\/span>/g);
     const sStr = JSON.stringify(s);
@@ -80,9 +89,9 @@ function get_douban_rating_message(data) {
     return douban_info;
 }
 
-
-function errorTip() {
-    return {noData: "⭐️ N/A", error: "❌ N/A"}
+function hasJapanese(str) {
+        var regExp = /[\u3040-\u309F\u30A0-\u30FF\u31F0-\u31FF\uFF65-\uFF9F]/g;
+        return regExp.test(str);
 }
 
 function Tool() {
