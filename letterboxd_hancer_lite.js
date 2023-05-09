@@ -2,7 +2,6 @@
 README：https://github.com/yichahucha/surge/tree/master
  */
 
-const tmdb_api = "05902896074695709d7763505bb88b4d";
 const $tool = new Tool();
 const consoleLog = true;
 
@@ -11,8 +10,7 @@ if ($tool.isResponse) {
     if (consoleLog) {
         console.log("Letterboxd Original Body:\n" + $response.body);
     }
-    if (obj.contributions[0].type === "Director") {
-        const dir_tmdbid = obj.contributions[0].contributors[0].tmdbid;
+    if (obj.links[2].type === "imdb") {
         const imdb_id = obj.links[2].id;
         const requestZH = async () => {
             const Douban = await requestDoubanRating(imdb_id);
@@ -33,13 +31,15 @@ if ($tool.isResponse) {
                 if (obj["originalName"]) {
                     if (obj.languages[0].name !== 'Chinese' && obj.languages[0].name !== 'Cantonese') {
                         let re_name = `${chi_name} ${oriName}`;
-                        if (obj.languages[0].name !== 'Japanese') {
-                            if (re_name.length > 22) {
-                                obj["originalName"] = `${chi_name}\n${oriName}`;
-                            } else {
-                                obj["originalName"] = `${chi_name} ${oriName}`;
+                        if (obj.languages[0].name === 'Japanese') {
+                            if (hasJapanese(chi_name)) {
+                                if (re_name.length > 22) {
+                                    obj["originalName"] = `${chi_name}\n${oriName}`;
+                                } else {
+                                    obj["originalName"] = `${chi_name} ${oriName}`;
+                                }
                             }
-                        } else if (hasJapanese(chi_name)) {
+                        } else {
                             if (re_name.length > 22) {
                                 obj["originalName"] = `${chi_name}\n${oriName}`;
                             } else {
@@ -96,8 +96,8 @@ function get_douban_rating_message(data) {
 }
 
 function hasJapanese(str) {
-        var regExp = /[\u3040-\u309F\u30A0-\u30FF]/g;
-        return regExp.test(str);
+    var regExp = /[\u3040-\u309F\u30A0-\u30FF]/g;
+    return regExp.test(str);
 }
 
 function errorTip() {
