@@ -17,9 +17,9 @@ if ($tool.isResponse) {
         const requestDir = async () => {
             const dir_zh_info = await requestDirZH(dir_tmdbid);
             const Douban = await requestDoubanRating(imdb_id);
-            const doubanRating = Douban.rating;
-            const dir_zh_bf = dir_zh_info.dir_zh_name;
-            const dir_zh = doubanRating + dir_zh_bf;
+            const film_zh = Douban.film_zh_title;
+            const dir_zh_bf = Douban.dir_zh_name;
+            const dir_zh = film_zh + dir_zh_bf;
             return dir_zh;
         };
         let msg = "";
@@ -168,8 +168,8 @@ function requestDoubanRating(imdbId) {
             if (!error) {
                 if (consoleLog) console.log("Netflix Douban Rating Data:\n" + data);
                 if (response.status == 200) {
-                    const rating = get_douban_rating_message(data);
-                    resolve({ rating });
+                    const douban_data = get_douban_rating_message(data);
+                    resolve(douban_data);
                 } else {
                     resolve({ rating: "Douban:  " + errorTip().noData });
                 }
@@ -187,7 +187,13 @@ function get_douban_rating_message(data) {
     const average = s ? s[0].split(/">(\d\.\d)</)[1] || '' : '';
     const numRaters = s ? s[0].split(/(\d+)\u4eba\u8bc4\u4ef7/)[1] || '' : '';
     const rating_message = `Douban:  ⭐️ ${average ? average + "/10" : "N/A"}   ${!numRaters ? "" : parseFloat(numRaters).toLocaleString()}`;
-    return rating_message;
+    const sStr = JSON.stringify(s);
+    const tit_match = sStr ? sStr.match(/<a[^>]+>([^<]+)<\/a>/) : null;
+    const film_zh_title = tit_match[1].trim();
+    const dir_match = sStr ? sStr.match(/>\s*\u539f\u540d\s*:\s*([^/]+)\/\s*([^/]+)\s*\/\s*([^/]+)\s*\/\s*(\d{4})/) : null;
+    const dir_zh_name = dir_match[2].trim();
+    const douban_info = {film_zh_title, dir_zh_name};
+    return douban_info;
 }
 
 
