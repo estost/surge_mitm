@@ -10,7 +10,7 @@ if ($tool.isResponse) {
     if (consoleLog) {
         console.log("Letterboxd Original Body:\n" + $response.body);
     }
-    if (obj.links[2].type === "imdb") {
+    if (obj.links[2].type === "imdb" && obj.contributions[0].contributions[0] && obj.languages[0]) {
         const imdb_id = obj.links[2].id;
         const requestZH = async () => {
             const Douban = await requestDoubanRating(imdb_id);
@@ -31,15 +31,13 @@ if ($tool.isResponse) {
                 if (obj["originalName"]) {
                     if (obj.languages[0].name !== 'Chinese' && obj.languages[0].name !== 'Cantonese') {
                         let re_name = `${chi_name} ${oriName}`;
-                        if (obj.languages[0].name === 'Japanese') {
-                            if (hasJapanese(chi_name)) {
-                                if (re_name.length > 22) {
-                                    obj["originalName"] = `${chi_name}\n${oriName}`;
-                                } else {
-                                    obj["originalName"] = `${chi_name} ${oriName}`;
-                                }
+                        if (obj.languages[0].name !== 'Japanese') {
+                            if (re_name.length > 22) {
+                                obj["originalName"] = `${chi_name}\n${oriName}`;
+                            } else {
+                                obj["originalName"] = `${chi_name} ${oriName}`;
                             }
-                        } else {
+                        } else if (hasJapanese(chi_name)) {
                             if (re_name.length > 22) {
                                 obj["originalName"] = `${chi_name}\n${oriName}`;
                             } else {
@@ -57,8 +55,6 @@ if ($tool.isResponse) {
                 if (consoleLog) console.log("Netflix Modified Body:\n" + JSON.stringify(obj));
                 $done({body: JSON.stringify(obj)});
             });
-    } else {
-        $done({});
     }
 }
 
@@ -96,7 +92,7 @@ function get_douban_rating_message(data) {
 }
 
 function hasJapanese(str) {
-    var regExp = /[\u3040-\u309F\u30A0-\u30FF]/g;
+    var regExp = /[\u3040-\u309F\u30A0-\u30FF\u31F0-\u31FF\uFF65-\uFF9F]/g;
     return regExp.test(str);
 }
 
