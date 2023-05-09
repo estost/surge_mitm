@@ -31,12 +31,20 @@ if ($tool.isResponse) {
                 let oriName = obj.originalName;
 
                 if (obj["originalName"]) {
-                    if (obj.languages[0].name !== 'Chinese' && obj.languages[0].name !== 'Cantonese' && !hasJapanese(chi_name)) {
+                    if (obj.languages[0].name !== 'Chinese' && obj.languages[0].name !== 'Cantonese') {
                         let re_name = `${chi_name} ${oriName}`;
-                        if (re_name.length > 22) {
-                            obj["originalName"] = `${chi_name}\n${oriName}`;
-                        } else {
-                            obj["originalName"] = `${chi_name} ${oriName}`;
+                        if (obj.languages[0].name !== 'Japanese') {
+                            if (re_name.length > 22) {
+                                obj["originalName"] = `${chi_name}\n${oriName}`;
+                            } else {
+                                obj["originalName"] = `${chi_name} ${oriName}`;
+                            }
+                        } else if (hasJapanese(chi_name)) {
+                            if (re_name.length > 22) {
+                                obj["originalName"] = `${chi_name}\n${oriName}`;
+                            } else {
+                                obj["originalName"] = `${chi_name} ${oriName}`;
+                            }
                         }
                     }
                 } else {
