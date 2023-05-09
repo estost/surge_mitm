@@ -25,7 +25,13 @@ if ($tool.isResponse) {
 
                 if (obj["originalName"]) {
                     if (obj.languages[0].name !== 'Chinese' && obj.languages[0].name !== 'Cantonese' && !hasJapanese(chi_name)) {
-                        if (obj.languages[0].name !== 'Japanese' || hasJapanese(oriName)) {
+                        if (obj.languages[0].name === 'Japanese' && hasJapanese(oriName)) {
+                            if (re_name.length > 22) {
+                                obj["originalName"] = `${chi_name}\n${oriName}`;
+                            } else {
+                                obj["originalName"] = `${chi_name} ${oriName}`;
+                            }
+                        } else if (obj.languages[0].name !== 'Japanese' && hasChinese(chi_name)) {
                             if (re_name.length > 22) {
                                 obj["originalName"] = `${chi_name}\n${oriName}`;
                             } else {
