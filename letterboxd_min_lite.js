@@ -24,7 +24,7 @@ if ($tool.isResponse) {
                 let re_name = `${chi_name} ${oriName}`;
 
                 if (obj["originalName"]) {
-                    if (obj.languages[0].name !== 'Chinese' && obj.languages[0].name !== 'Cantonese' && !hasJapanese(chi_name) && hasChinese(chi_name)) {
+                    if (obj.languages[0].name !== 'Chinese' && obj.languages[0].name !== 'Cantonese' && !hasJapanese(chi_name)) {
                         if (obj.languages[0].name !== 'Japanese' || hasJapanese(oriName)) {
                             if (re_name.length > 22) {
                                 obj["originalName"] = `${chi_name}\n${oriName}`;
@@ -33,7 +33,7 @@ if ($tool.isResponse) {
                             }
                         }
                     }
-                } else {
+                } else if (hasChinese(chi_name)) {
                     obj["originalName"] = `${chi_name}`;
                 }
 
