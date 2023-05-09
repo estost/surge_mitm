@@ -44,14 +44,10 @@ function requestDoubanInfo(imdb_id) {
         $tool.get(url, function (error, response, data) {
             if (!error) {
                 const douban_data = JSON.parse(data);
-                if (response.status == 200) {
-                    const doubanmsg = get_douban_zh_info(douban_data);
-                    const film_zh = doubanmsg.film_zh_title;
-                    const dir_zh = doubanmsg.dir_zh_name;
-                    resolve({film_zh, dir_zh});
-                } else {
-                    reject(errorTip().noData);
-                }
+                const doubanmsg = get_douban_zh_info(douban_data);
+                const film_zh = doubanmsg.film_zh_title;
+                const dir_zh = doubanmsg.dir_zh_name;
+                resolve({film_zh, dir_zh});
             } else {
                 reject(errorTip().error);
             }
