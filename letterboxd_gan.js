@@ -43,24 +43,24 @@ function requestDoubanInfo(imdb_id) {
         console.log("Netflix Douban Rating URL:\n" + url);
         $tool.get(url, function (error, response, data) {
             if (!error) {
-                if (consoleLog) console.log("Letterboxd Douban Data:\n" + data);
+                const douban_data = JSON.parse(data);
                 if (response.status == 200) {
-                    const film_zh = get_douban_zh_info(data).film_zh_title;
-                    const dir_zh = get_douban_zh_info(data).dir_zh_name;
+                    const doubanmsg = get_douban_zh_info(douban_data);
+                    const film_zh = doubanmsg.film_zh_title;
+                    const dir_zh = doubanmsg.dir_zh_name;
                     resolve({film_zh, dir_zh});
                 } else {
-                    resolve({rating: "Douban:  " + errorTip().noData});
+                    reject(errorTip().noData);
                 }
             } else {
-                console.log("Letterboxd Douban Rating Error:\n" + error);
-                resolve({rating: "Douban:  " + errorTip().error});
+                reject(errorTip().error);
             }
         });
     });
 }
 
 function get_douban_zh_info(data) {
-    const s = String(data).replace(/\n| |&#\d{2}/g, '')
+    const s = data.replace(/\n| |&#\d{2}/g, '')
         .match(/\[(\u7535\u5f71|\u7535\u89c6\u5267)\].+?subject-cast\">.+?<\/span>/g);
     const sStr = JSON.stringify(s);
     const tit_match = sStr ? sStr.match(/<a[^>]+>([^<]+)<\/a>/) : null;
