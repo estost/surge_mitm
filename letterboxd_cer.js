@@ -23,8 +23,9 @@ if ($tool.isResponse) {
                 let chi_tit = Douban.film_zh;
                 let chi_dir = Douban.dir_zh;
                 let Director = obj.contributions[0].contributors[0];
-                if (obj.originalName) {
-                    obj["originalName"] = `${chi_tit} ${obj.originalName}`;
+                let oriName = obj.originalName;
+                if (obj["originalName"]) {
+                    obj["originalName"] = `${chi_tit} ${oriName}`;
                 } else {
                     obj["originalName"] = `${chi_tit}`;
                 }
@@ -58,7 +59,6 @@ function requestDoubanInfo(imdb_id) {
         });
     });
 }
-
 
 function get_douban_zh_info(data) {
     const s = data.replace(/\n| |&#\d{2}/g, '')
