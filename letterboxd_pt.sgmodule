@@ -1,5 +1,5 @@
-#!name= Letterboxd PT 
-#!desc= Letterboxd 中文增强显示 Lite
+#!name= Letterboxd PT Source
+#!desc= Letterboxd PT 资源搜索
 #!icon=https://letterboxd.com/favicon.ico
 [Script]
 api\.letterboxd\.com/api/v0/film/
