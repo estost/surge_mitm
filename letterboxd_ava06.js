@@ -7,7 +7,7 @@ if ($tool.isResponse) {
     if (obj.items) {
         const ptp_obj = {
       "displayName": "PTP",
-      "icon": "https://en.gravatar.com/userimage/235122156/6768a06f40d2a90a1b4875e8554b5bdb.png?size=200",
+      "icon": "https://en.gravatar.com/userimage/235122156/1e84f8298dfcba818c6fa27610431b24.png?size=64",
       "country": "REMUX",
       "url": "https://passthepopcorn.me",
       "types": [
@@ -17,7 +17,7 @@ if ($tool.isResponse) {
     };
         const kg_obj = {
       "displayName": "KG",
-      "icon": "https://en.gravatar.com/userimage/235122156/8737b3d4f436694fc3f04e695f8f3b47.png?size=200",
+      "icon": "https://en.gravatar.com/userimage/235122156/8692ebac643b444908fe4dc3d6571754.png?size=64",
       "country": "USA",
       "url": "https://karagarga.in",
       "types": [
@@ -27,7 +27,7 @@ if ($tool.isResponse) {
     };
         const pter_obj = {
       "displayName": "Pter",
-      "icon": "https://en.gravatar.com/userimage/235122156/2376d35836a8939e171c245dd6b7a8b6.png?size=200",
+      "icon": "https://en.gravatar.com/userimage/235122156/53bc1ec0fc829351a9e2eda29f5aa1e1.png?size=64",
       "country": "CHN",
       "url": "https://pterclub.com",
       "types": [
@@ -35,11 +35,11 @@ if ($tool.isResponse) {
       ],
       "serviceCode": "pt-pter"
     };
-        
+
         obj.items.splice(0, 0, ptp_obj);
         obj.items.splice(1, 0, kg_obj);
         obj.items.splice(2, 0, pter_obj);
-        
+
         $done({body: JSON.stringify(obj)});
 
         /*
