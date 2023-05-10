@@ -50,7 +50,8 @@ if ($tool.isResponse) {
         "diaryEntries": []
       }
     };
-        obj.items.splice(0, 0, pter_obj);
+        obj.items.splice(obj.items.length, 0, pter_obj);
+        obj["watchListCount"] = `${obj.watchListCount += 1}`;
         $done({body: JSON.stringify(obj)});
 
         /*const imdb_id = obj.links[2].id;
