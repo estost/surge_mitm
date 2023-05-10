@@ -7,35 +7,34 @@ if ($tool.isResponse) {
     if (obj.items) {
         const pter_obj = {
       "member": {
-        "id": "2zDHd",
-        "username": "Pter",
-        "givenName": "Pter",
-        "displayName": "Pter",
-        "shortName": "Pter",
+        "id": "391Dp",
+        "username": "rongyu96",
+        "displayName": "rongyu96",
+        "shortName": "rongyu96",
         "pronoun": {
-          "id": "3R",
-          "label": "He / his",
-          "subjectPronoun": "he",
-          "objectPronoun": "him",
-          "possessiveAdjective": "his",
-          "possessivePronoun": "his",
-          "reflexive": "himself"
+          "id": "5t",
+          "label": "She / her",
+          "subjectPronoun": "she",
+          "objectPronoun": "her",
+          "possessiveAdjective": "her",
+          "possessivePronoun": "hers",
+          "reflexive": "herself"
         },
         "avatar": {
           "sizes": [
             {
               "width": 144,
               "height": 144,
-              "url": "https://pterclub.com/favicon.ico"
+              "url": "https://a.ltrbxd.com/resized/avatar/upload/4/6/4/8/0/2/4/shard/avtr-0-144-0-144-crop.jpg?v=5a9cad3fec"
             },
             {
               "width": 300,
               "height": 300,
-              "url": "https://pterclub.com/favicon.ico"
+              "url": "https://a.ltrbxd.com/resized/avatar/upload/4/6/4/8/0/2/4/shard/avtr-0-300-0-300-crop.jpg?v=5a9cad3fec"
             }
           ]
         },
-        "memberStatus": "Patron",
+        "memberStatus": "Pro",
         "hideAdsInContent": false,
         "accountStatus": "Active",
         "hideAds": false
@@ -45,13 +44,13 @@ if ($tool.isResponse) {
         "liked": false,
         "favorited": false,
         "inWatchlist": true,
-        "whenAddedToWatchlist": "2023-04-22T09:53:57Z",
+        "whenAddedToWatchlist": "2022-10-12T20:23:12Z",
         "reviews": [],
         "diaryEntries": []
       }
     };
         obj.items.splice(obj.items.length, 0, pter_obj);
-        obj["watchListCount"] = `${obj.watchListCount += 1}`;
+        obj["watchListCount"] = obj.watchListCount += 1;
         $done({body: JSON.stringify(obj)});
 
         /*const imdb_id = obj.links[2].id;
