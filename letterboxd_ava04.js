@@ -7,7 +7,7 @@ if ($tool.isResponse) {
     if (obj.items) {
         const pter_obj = {
       "displayName": "Pter",
-      "icon": "https://a.ltrbxd.com/resized/avatar/upload/4/6/4/8/0/2/4/shard/avtr-0-144-0-144-crop.jpg?v=5a9cad3fec",
+      "icon": "https://en.gravatar.com/userimage/235122156/05bffa67a26606b078cbece9515c721f.png?size=200",
       "country": "CHN",
       "url": "https://pterclub.com",
       "types": [
