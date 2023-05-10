@@ -5,8 +5,7 @@ if ($tool.isResponse) {
     let obj = JSON.parse($response.body);
     if (consoleLog) console.log("Letterboxd PT Original Body:\n" + $response.body);
     if (obj.items) {
-        const pter_obj = `
-                {
+        const pter_obj = {
       "member": {
         "id": "2zDHd",
         "username": "Pter",
@@ -50,7 +49,7 @@ if ($tool.isResponse) {
         "reviews": [],
         "diaryEntries": []
       }
-    },`;
+    };
         obj.items.splice(0, 0, pter_obj);
         $done({body: JSON.stringify(obj)});
 
