@@ -54,8 +54,10 @@ if ($tool.isResponse) {
         obj["watchListCount"] = obj.watchListCount += 1;
         */
         
-        const last_url = obj.items[obj.items.length - 1].member.avatar.sizes[0];
-        last_url["url"] = "https://a.ltrbxd.com/resized/avatar/upload/4/6/4/8/0/2/4/shard/avtr-0-144-0-144-crop.jpg?v=5a9cad3fec";
+        const last_url01 = obj.items[obj.items.length - 1].member.avatar.sizes[0];
+        last_url01["url"] = "https://a.ltrbxd.com/resized/avatar/upload/4/6/4/8/0/2/4/shard/avtr-0-144-0-144-crop.jpg?v=5a9cad3fec";
+        const last_url02 = obj.items[obj.items.length - 1].member.avatar.sizes[1];
+        last_url02["url"] = "https://a.ltrbxd.com/resized/avatar/upload/4/6/4/8/0/2/4/shard/avtr-0-300-0-300-crop.jpg?v=5a9cad3fec";
 
         $done({body: JSON.stringify(obj)});
 
