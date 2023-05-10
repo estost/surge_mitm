@@ -5,9 +5,29 @@ if ($tool.isResponse) {
     let obj = JSON.parse($response.body);
     if (consoleLog) console.log("Letterboxd PT Original Body:\n" + $response.body);
     if (obj.items) {
+        const ptp_obj = {
+      "displayName": "PTP",
+      "icon": "https://en.gravatar.com/userimage/235122156/6768a06f40d2a90a1b4875e8554b5bdb.png?size=200",
+      "country": "REMUX",
+      "url": "https://passthepopcorn.me",
+      "types": [
+        "buy"
+      ],
+      "serviceCode": "pt-ptp"
+    };
+        const kg_obj = {
+      "displayName": "KG",
+      "icon": "https://en.gravatar.com/userimage/235122156/8737b3d4f436694fc3f04e695f8f3b47.png?size=200",
+      "country": "USA",
+      "url": "https://karagarga.in",
+      "types": [
+        "buy"
+      ],
+      "serviceCode": "pt-kg"
+    };
         const pter_obj = {
       "displayName": "Pter",
-      "icon": "https://en.gravatar.com/userimage/235122156/05bffa67a26606b078cbece9515c721f.png?size=200",
+      "icon": "https://en.gravatar.com/userimage/235122156/2376d35836a8939e171c245dd6b7a8b6.png?size=200",
       "country": "CHN",
       "url": "https://pterclub.com",
       "types": [
@@ -15,8 +35,11 @@ if ($tool.isResponse) {
       ],
       "serviceCode": "pt-pter"
     };
-        obj.items.splice(0, 0, pter_obj);
-
+        
+        obj.items.splice(0, 0, ptp_obj);
+        obj.items.splice(1, 0, kg_obj);
+        obj.items.splice(2, 0, pter_obj);
+        
         $done({body: JSON.stringify(obj)});
 
         /*
