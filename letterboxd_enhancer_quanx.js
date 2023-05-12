@@ -5,7 +5,7 @@
 **************************************
 
 [rewrite_local]
-^https:\/\/server\.(yoyiapp|zbisq)\.com url script-response-body https://raw.githubusercontent.com/chxm1023/Rewrite/main/fimo.js
+^https?://api\.letterboxd\.com/api/v0/film/[a-zA-Z0-9]+\?apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+ url script-response-body https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_enhancer_quanx.js
 
 [mitm]
 hostname = api.letterboxd.com
