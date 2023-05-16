@@ -6,6 +6,10 @@
 
 [rewrite_local]
 ^https?://api\.letterboxd\.com/api/v0/film/[a-zA-Z0-9]+\?apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+ url script-response-body https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_enhancer_quanx.js
+^https?://api\.letterboxd\.com/api/v0/list/[a-zA-Z0-9]+/entries\?.+&apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+ url script-response-body https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_enhancer_quanx.js
+^https?://api\.letterboxd\.com/api/v0/lists\?.+&apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+ url script-response-body https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_enhancer_quanx.js
+^https?://api\.letterboxd\.com/api/v0/contributor/[a-zA-Z0-9]+/contributions\?.+&apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+ url script-response-body https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_enhancer_quanx.js
+^https?://api\.letterboxd\.com/api/v0/search.+&apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+ url script-response-body https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_enhancer_quanx.js
 
 [mitm]
 hostname = api.letterboxd.com
@@ -16,8 +20,15 @@ hostname = api.letterboxd.com
 const $tool = new Tool();
 const consoleLog = false;
 
-if ($tool.isResponse) {
-    let obj = JSON.parse($response.body);
+var obj = JSON.parse($response.body);
+const re_title = '/api/v0/film/';
+const re_poster = '/api/v0/list/';
+const re_list = '/api/v0/lists?';
+const re_cont = '/api/v0/contributor/';
+const re_search = '/api/v0/search?';
+
+
+if ($request.url.indexOf(re_title) != -1) {
     if (consoleLog) console.log("Letterboxd Original Body:\n" + $response.body);
     if (obj.links[2].type === "imdb") {
         const imdb_id = obj.links[2].id;
@@ -33,6 +44,12 @@ if ($tool.isResponse) {
             .then(data_zh => msg = data_zh)
             .catch(error => msg = error + "\n")
             .finally(() => {
+                if (obj.adultPoster) {
+                    let poster = obj.poster;
+                    let a_sizes = obj.adultPoster.sizes;
+                    poster.sizes = a_sizes;
+                }
+
                 let chi_name = msg.split('|')[0];
                 let chi_dir = msg.split('|')[1];
                 let oriName = obj.originalName;
@@ -69,6 +86,52 @@ if ($tool.isResponse) {
     } else {
         $done({});
     }
+}
+
+if ($request.url.indexOf(re_poster) != -1) {
+    obj.items.forEach(function (item) {
+        if (item.film.adult) {
+            let poster = item.film.poster;
+            let a_sizes = item.film.adultPoster.sizes;
+            poster.sizes = a_sizes;
+        }
+    });
+    $done({body: JSON.stringify(obj)});
+}
+
+if ($request.url.indexOf(re_list) != -1) {
+    obj.items.forEach(function (item) {
+        item.previewEntries.forEach(function (tit_item) {
+            if (tit_item.film.adult) {
+                let poster = tit_item.film.poster;
+                let a_sizes = tit_item.film.adultPoster.sizes;
+                poster.sizes = a_sizes;
+            }
+        });
+    });
+    $done({body: JSON.stringify(obj)});
+}
+
+if ($request.url.indexOf(re_cont) != -1) {
+    obj.items.forEach(function (con_item) {
+        if (con_item.film.adult) {
+            let poster = con_item.film.poster;
+            let a_sizes = con_item.film.adultPoster.sizes;
+            poster.sizes = a_sizes;
+        }
+    });
+    $done({body: JSON.stringify(obj)});
+}
+
+if ($request.url.indexOf(re_search) != -1) {
+    obj.items.forEach(function (sea_item) {
+        if (sea_item.film.adult) {
+            let poster = sea_item.film.poster;
+            let a_sizes = sea_item.film.adultPoster.sizes;
+            poster.sizes = a_sizes;
+        }
+    });
+    $done({body: JSON.stringify(obj)});
 }
 
 function requestDoubanInfo(imdbId) {
