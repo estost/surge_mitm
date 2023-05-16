@@ -1,66 +1,84 @@
 const $tool = new Tool();
 const consoleLog = false;
 
-if ($tool.isResponse) {
-    let obj = JSON.parse($response.body);
-    if (consoleLog) console.log("Letterboxd Original Body:\n" + $response.body);
-    if (obj.links[2].type === "imdb") {
-        const imdb_id = obj.links[2].id;
-        const requestZH = async () => {
-            const Douban = await requestDoubanInfo(imdb_id);
-            const film_zh = Douban.film_zh_title;
-            const dir_zh = Douban.dir_zh_name;
-            const data_zh = film_zh + "|" + dir_zh;
-            return data_zh;
-        };
-        let msg = "";
-        requestZH()
-            .then(data_zh => msg = data_zh)
-            .catch(error => msg = error + "\n")
-            .finally(() => {
-                if (obj.adultPoster) {
-                    let poster = obj.poster;
-                    let a_sizes = obj.adultPoster.sizes;
-                    poster.sizes = a_sizes;
-                }
+var obj = JSON.parse($response.body);
+const re_title = '/api/v0/film/';
+const re_poster = '/api/v0/list/';
 
-                let chi_name = msg.split('|')[0];
-                let chi_dir = msg.split('|')[1];
-                let oriName = obj.originalName;
-                let re_name = `${chi_name} ${oriName}`;
+if ($request.url.indexOf(re_title) != -1) {
+    if ($tool.isResponse) {
+        if (consoleLog) console.log("Letterboxd Original Body:\n" + $response.body);
+        if (obj.links[2].type === "imdb") {
+            const imdb_id = obj.links[2].id;
+            const requestZH = async () => {
+                const Douban = await requestDoubanInfo(imdb_id);
+                const film_zh = Douban.film_zh_title;
+                const dir_zh = Douban.dir_zh_name;
+                const data_zh = film_zh + "|" + dir_zh;
+                return data_zh;
+            };
+            let msg = "";
+            requestZH()
+                .then(data_zh => msg = data_zh)
+                .catch(error => msg = error + "\n")
+                .finally(() => {
+                    if (obj.adultPoster) {
+                        let poster = obj.poster;
+                        let a_sizes = obj.adultPoster.sizes;
+                        poster.sizes = a_sizes;
+                    }
 
-                if (obj["originalName"]) {
-                    if (obj.languages[0].name !== 'Chinese' && obj.languages[0].name !== 'Cantonese' && !hasJapanese(chi_name)) {
-                        if (obj.languages[0].name === 'Japanese' && hasJapanese(oriName)) {
-                            if (re_name.length > 22) {
-                                obj["originalName"] = `${chi_name}\n${oriName}`;
-                            } else {
-                                obj["originalName"] = `${chi_name} ${oriName}`;
-                            }
-                        } else if (obj.languages[0].name !== 'Japanese' && hasChinese(chi_name)) {
-                            if (re_name.length > 22) {
-                                obj["originalName"] = `${chi_name}\n${oriName}`;
-                            } else {
-                                obj["originalName"] = `${chi_name} ${oriName}`;
+                    let chi_name = msg.split('|')[0];
+                    let chi_dir = msg.split('|')[1];
+                    let oriName = obj.originalName;
+                    let re_name = `${chi_name} ${oriName}`;
+
+                    if (obj["originalName"]) {
+                        if (obj.languages[0].name !== 'Chinese' && obj.languages[0].name !== 'Cantonese' && !hasJapanese(chi_name)) {
+                            if (obj.languages[0].name === 'Japanese' && hasJapanese(oriName)) {
+                                if (re_name.length > 22) {
+                                    obj["originalName"] = `${chi_name}\n${oriName}`;
+                                } else {
+                                    obj["originalName"] = `${chi_name} ${oriName}`;
+                                }
+                            } else if (obj.languages[0].name !== 'Japanese' && hasChinese(chi_name)) {
+                                if (re_name.length > 22) {
+                                    obj["originalName"] = `${chi_name}\n${oriName}`;
+                                } else {
+                                    obj["originalName"] = `${chi_name} ${oriName}`;
+                                }
                             }
                         }
+                    } else if (hasChinese(chi_name)) {
+                        obj["originalName"] = `${chi_name}`;
                     }
-                } else if (hasChinese(chi_name)) {
-                    obj["originalName"] = `${chi_name}`;
-                }
 
-                let dir_en_name = obj.contributions[0].contributors[0].name;
-                let dir_info = obj.contributions[0].contributors[0];
-                if (hasChinese(chi_dir)) {
-                    dir_info["name"] = `${chi_dir} ${dir_en_name}`;
-                }
-                if (consoleLog) console.log("Letterboxd Modified Body:\n" + JSON.stringify(obj));
-                $done({body: JSON.stringify(obj)});
-            });
-    } else {
-        $done({});
+                    let dir_en_name = obj.contributions[0].contributors[0].name;
+                    let dir_info = obj.contributions[0].contributors[0];
+                    if (hasChinese(chi_dir)) {
+                        dir_info["name"] = `${chi_dir} ${dir_en_name}`;
+                    }
+                    if (consoleLog) console.log("Letterboxd Modified Body:\n" + JSON.stringify(obj));
+                    $done({body: JSON.stringify(obj)});
+                });
+        } else {
+            $done({});
+        }
     }
+
 }
+
+if ($request.url.indexOf(re_poster) != -1) {
+    obj.items.forEach(function (item) {
+        if (item.film.adult) {
+            let poster = item.film.poster;
+            let a_sizes = item.film.adultPoster.sizes;
+            poster.sizes = a_sizes;
+        }
+    });
+    $done({body: JSON.stringify(obj)});
+}
+
 
 function requestDoubanInfo(imdbId) {
     return new Promise(function (resolve, reject) {
