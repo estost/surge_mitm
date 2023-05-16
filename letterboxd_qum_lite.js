@@ -4,6 +4,8 @@ const consoleLog = false;
 var obj = JSON.parse($response.body);
 const re_title = '/api/v0/film/';
 const re_poster = '/api/v0/list/';
+const re_list = '/api/v0/lists?';
+
 
 if ($request.url.indexOf(re_title) != -1) {
     if ($tool.isResponse) {
@@ -75,6 +77,19 @@ if ($request.url.indexOf(re_poster) != -1) {
             let a_sizes = item.film.adultPoster.sizes;
             poster.sizes = a_sizes;
         }
+    });
+    $done({body: JSON.stringify(obj)});
+}
+
+if ($request.url.indexOf(re_list) != -1) {
+    obj.items.forEach(function (item) {
+        item.previewEntries.forEach(function (tit_item) {
+            if (tit_item.film.adult) {
+                let poster = tit_item.film.poster;
+                let a_sizes = tit_item.film.adultPoster.sizes;
+                poster.sizes = a_sizes;
+            }
+        });
     });
     $done({body: JSON.stringify(obj)});
 }
