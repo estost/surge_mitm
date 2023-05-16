@@ -18,9 +18,9 @@ if ($tool.isResponse) {
             .then(data_zh => msg = data_zh)
             .catch(error => msg = error + "\n")
             .finally(() => {
-                let poster = obj.poster;
-                let a_sizes = obj.adultPoster.sizes;
-                if (a_sizes) {
+                if (obj.adultPoster) {
+                    let poster = obj.poster;
+                    let a_sizes = obj.adultPoster.sizes;
                     poster.sizes = a_sizes;
                 }
 
