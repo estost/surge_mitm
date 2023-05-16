@@ -7,7 +7,7 @@ const re_poster = '/api/v0/list/';
 const re_list = '/api/v0/lists?';
 const re_cont = '/api/v0/contributor/';
 const re_search = '/api/v0/search?';
-const re_log = '/api/v0/log-entry/';
+const re_log = '/api/v0/log-entries';
 
 
 if ($request.url.indexOf(re_title) != -1) {
@@ -117,11 +117,13 @@ if ($request.url.indexOf(re_search) != -1) {
 }
 
 if ($request.url.indexOf(re_log) != -1) {
-    if (obj.film.adult) {
-        let poster = obj.film.poster;
-        let a_sizes = obj.film.adultPoster.sizes;
-        poster.sizes = a_sizes;
-    }
+    obj.items.forEach(function (ent_item) {
+        if (ent_item.film.adult) {
+            let poster = ent_item.film.poster;
+            let a_sizes = ent_item.film.adultPoster.sizes;
+            poster.sizes = a_sizes;
+        }
+    });
     $done({body: JSON.stringify(obj)});
 }
 
