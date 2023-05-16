@@ -21,7 +21,7 @@ if ($tool.isResponse) {
                 let poster = obj.poster;
                 let a_sizes = obj.adultPoster.sizes;
                 if (a_sizes) {
-                    poster["sizes"] = a_sizes;
+                    poster.sizes = a_sizes;
                 }
 
                 let chi_name = msg.split('|')[0];
