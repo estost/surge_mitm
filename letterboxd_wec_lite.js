@@ -7,7 +7,7 @@ const re_poster = '/api/v0/list/';
 const re_list = '/api/v0/lists?';
 const re_cont = '/api/v0/contributor/';
 const re_search = '/api/v0/search?';
-const re_log = '/api/v0/log-entries';
+const re_log = '/api/v0/log-entries?';
 
 
 if ($request.url.indexOf(re_title) != -1) {
