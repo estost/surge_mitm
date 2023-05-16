@@ -7,8 +7,8 @@ const re_poster = '/api/v0/list/';
 const re_list = '/api/v0/lists?';
 const re_cont = '/api/v0/contributor/';
 const re_search = '/api/v0/search?';
-const re_log = '/api/v0/log-entries?';
-
+const re_entries = '/api/v0/log-entries?';
+const re_entry = '/api/v0/log-entry/';
 
 if ($request.url.indexOf(re_title) != -1) {
     if (consoleLog) console.log("Letterboxd Original Body:\n" + $response.body);
@@ -116,7 +116,7 @@ if ($request.url.indexOf(re_search) != -1) {
     $done({body: JSON.stringify(obj)});
 }
 
-if ($request.url.indexOf(re_log) != -1) {
+if ($request.url.indexOf(re_entries) != -1) {
     obj.items.forEach(function (ent_item) {
         if (ent_item.film.adult) {
             let poster = ent_item.film.poster;
@@ -124,6 +124,15 @@ if ($request.url.indexOf(re_log) != -1) {
             poster.sizes = a_sizes;
         }
     });
+    $done({body: JSON.stringify(obj)});
+}
+
+if ($request.url.indexOf(re_entry) != -1) {
+    if (obj.film.adult) {
+        let poster = obj.film.poster;
+        let a_sizes = obj.film.adultPoster.sizes;
+        poster.sizes = a_sizes;
+    }
     $done({body: JSON.stringify(obj)});
 }
 
