@@ -18,6 +18,12 @@ if ($tool.isResponse) {
             .then(data_zh => msg = data_zh)
             .catch(error => msg = error + "\n")
             .finally(() => {
+                let poster = obj.poster;
+                let a_sizes = obj.adultPoster.sizes;
+                if (a_sizes) {
+                    poster["sizes"] = a_sizes;
+                }
+
                 let chi_name = msg.split('|')[0];
                 let chi_dir = msg.split('|')[1];
                 let oriName = obj.originalName;
