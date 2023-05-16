@@ -93,14 +93,12 @@ if ($request.url.indexOf(re_list) != -1) {
 }
 
 if ($request.url.indexOf(re_cont) != -1) {
-    obj.items.forEach(function (item) {
-        item.previewEntries.forEach(function (con_item) {
-            if (con_item.film.adult) {
-                let poster = con_item.film.poster;
-                let a_sizes = con_item.film.adultPoster.sizes;
-                poster.sizes = a_sizes;
-            }
-        });
+    obj.items.forEach(function (con_item) {
+        if (con_item.film.adult) {
+            let poster = con_item.film.poster;
+            let a_sizes = con_item.film.adultPoster.sizes;
+            poster.sizes = a_sizes;
+        }
     });
     $done({body: JSON.stringify(obj)});
 }
