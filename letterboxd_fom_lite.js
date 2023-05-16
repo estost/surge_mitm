@@ -6,6 +6,7 @@ const re_title = '/api/v0/film/';
 const re_poster = '/api/v0/list/';
 const re_list = '/api/v0/lists?';
 const re_cont = '/api/v0/contributor/';
+const re_search = '/api/v0/search?';
 
 
 if ($request.url.indexOf(re_title) != -1) {
@@ -103,6 +104,16 @@ if ($request.url.indexOf(re_cont) != -1) {
     $done({body: JSON.stringify(obj)});
 }
 
+if ($request.url.indexOf(re_search) != -1) {
+    obj.items.forEach(function (sea_item) {
+        if (sea_item.film.adult) {
+            let poster = sea_item.film.poster;
+            let a_sizes = sea_item.film.adultPoster.sizes;
+            poster.sizes = a_sizes;
+        }
+    });
+    $done({body: JSON.stringify(obj)});
+}
 
 function requestDoubanInfo(imdbId) {
     return new Promise(function (resolve, reject) {
