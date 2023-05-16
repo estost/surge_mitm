@@ -8,4 +8,5 @@ adultTitle=type=http-response,pattern=^https?://api\.letterboxd\.com/api/v0/list
 List=type=http-response,pattern=^https?://api\.letterboxd\.com/api/v0/lists\?.+&apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+,requires-body=1,script-path=https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_dwo_lite.js, requires-body=true, timeout=10
 contributions=type=http-response,pattern=^https?://api\.letterboxd\.com/api/v0/contributor/[a-zA-Z0-9]+/contributions\?.+&apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+,requires-body=1,script-path=https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_dwo_lite.js, requires-body=true, timeout=10
 search=type=http-response,pattern=^https?://api\.letterboxd\.com/api/v0/search.+&apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+,requires-body=1,script-path=https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_dwo_lite.js, requires-body=true, timeout=10
+[MITM]
 hostname = %APPEND% api.letterboxd.com
