@@ -2,15 +2,40 @@ const $tool = new Tool();
 const consoleLog = false;
 
 var obj = JSON.parse($response.body);
+const re_seaFilm = 'FilmSearchItem';
+const re_seaList = 'ListSearchItem';
 const re_title = '/api/v0/film/';
 const re_poster = '/api/v0/list/';
 const re_list = '/api/v0/lists?';
 const re_cont = '/api/v0/contributor/';
-const re_search = '/api/v0/search?';
 const re_entries = '/api/v0/log-entries?';
 const re_entry = '/api/v0/log-entry/';
 const re_watched = '/api/v0/films?';
 const re_watlist = '/watchlist?';
+
+if ($request.url.indexOf(re_seaFilm) != -1) {
+    obj.items.forEach(function (sea_item) {
+        if (sea_item.film.adult) {
+            let poster = sea_item.film.poster;
+            let a_sizes = sea_item.film.adultPoster.sizes;
+            poster.sizes = a_sizes;
+        }
+    });
+    $done({body: JSON.stringify(obj)});
+}
+
+if ($request.url.indexOf(re_seaList) != -1) {
+    obj.items.forEach(function (item) {
+        item.list.previewEntries.forEach(function (tit_item) {
+            if (tit_item.film.adult) {
+                let poster = tit_item.film.poster;
+                let a_sizes = tit_item.film.adultPoster.sizes;
+                poster.sizes = a_sizes;
+            }
+        });
+    });
+    $done({body: JSON.stringify(obj)});
+}
 
 if ($request.url.indexOf(re_title) != -1) {
     if (consoleLog) console.log("Letterboxd Original Body:\n" + $response.body);
@@ -101,17 +126,6 @@ if ($request.url.indexOf(re_cont) != -1) {
         if (con_item.film.adult) {
             let poster = con_item.film.poster;
             let a_sizes = con_item.film.adultPoster.sizes;
-            poster.sizes = a_sizes;
-        }
-    });
-    $done({body: JSON.stringify(obj)});
-}
-
-if ($request.url.indexOf(re_search) != -1) {
-    obj.items.forEach(function (sea_item) {
-        if (sea_item.film.adult) {
-            let poster = sea_item.film.poster;
-            let a_sizes = sea_item.film.adultPoster.sizes;
             poster.sizes = a_sizes;
         }
     });
