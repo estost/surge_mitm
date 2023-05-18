@@ -10,9 +10,10 @@
 ^https?://api\.letterboxd\.com/api/v0/list/[a-zA-Z0-9]+/entries\?.+&apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+ url script-response-body https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_enhancer_quanx.js
 ^https?://api\.letterboxd\.com/api/v0/lists\?.+&apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+ url script-response-body https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_enhancer_quanx.js
 ^https?://api\.letterboxd\.com/api/v0/contributor/[a-zA-Z0-9]+/contributions\?.+&apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+ url script-response-body https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_enhancer_quanx.js
-^https?://api\.letterboxd\.com/api/v0/search.+&apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+ url script-response-body https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_enhancer_quanx.js
+^https?://api\.letterboxd\.com/api/v0/search.+&input=.+FilmSearchItem.+&apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+ url script-response-body https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_enhancer_quanx.js
 ^https?://api\.letterboxd\.com/api/v0/log-entries.+&apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+ url script-response-body https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_enhancer_quanx.js
 ^https?://api\.letterboxd\.com/api/v0/log-entry/[a-zA-Z0-9]+\?apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+ url script-response-body https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_enhancer_quanx.js
+^https?://api\.letterboxd\.com/api/v0/films.+memberRelationship=Watched&.+&apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+6&signature=[a-zA-Z0-9]+ url script-response-body https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_enhancer_quanx.js
 [mitm]
 hostname = api.letterboxd.com
 
@@ -30,6 +31,7 @@ const re_cont = '/api/v0/contributor/';
 const re_search = '/api/v0/search?';
 const re_entries = '/api/v0/log-entries?';
 const re_entry = '/api/v0/log-entry/';
+const re_watched = 'memberRelationship';
 
 if ($request.url.indexOf(re_title) != -1) {
     if (consoleLog) console.log("Letterboxd Original Body:\n" + $response.body);
@@ -154,6 +156,17 @@ if ($request.url.indexOf(re_entry) != -1) {
         let a_sizes = obj.film.adultPoster.sizes;
         poster.sizes = a_sizes;
     }
+    $done({body: JSON.stringify(obj)});
+}
+
+if ($request.url.indexOf(re_watched) != -1) {
+    obj.items.forEach(function (wat_item) {
+        if (wat_item.adult) {
+            let poster = wat_item.poster;
+            let a_sizes = wat_item.adultPoster.sizes;
+            poster.sizes = a_sizes;
+        }
+    });
     $done({body: JSON.stringify(obj)});
 }
 
