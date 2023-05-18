@@ -6,7 +6,7 @@ const re_title = '/api/v0/film/';
 const re_poster = '/api/v0/list/';
 const re_list = '/api/v0/lists?';
 const re_cont = '/api/v0/contributor/';
-const re_search = '/api/v0/search?';
+const re_search = 'FilmSearchItem';
 const re_entries = '/api/v0/log-entries?';
 const re_entry = '/api/v0/log-entry/';
 
