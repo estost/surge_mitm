@@ -6,11 +6,11 @@
 **************************************
 
 [rewrite_local]
+^https?://api\.letterboxd\.com/api/v0/search.+include=(FilmSearchItem|ListSearchItem).*(?<!SearchItem)&apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+ url script-response-body https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_enhancer_quanx.js
 ^https?://api\.letterboxd\.com/api/v0/film/[a-zA-Z0-9]+\?apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+ url script-response-body https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_enhancer_quanx.js
 ^https?://api\.letterboxd\.com/api/v0/list/[a-zA-Z0-9]+/entries\?.+&apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+ url script-response-body https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_enhancer_quanx.js
 ^https?://api\.letterboxd\.com/api/v0/lists\?.+&apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+ url script-response-body https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_enhancer_quanx.js
 ^https?://api\.letterboxd\.com/api/v0/contributor/[a-zA-Z0-9]+/contributions\?.+&apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+ url script-response-body https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_enhancer_quanx.js
-^https?://api\.letterboxd\.com/api/v0/search.+include=FilmSearchItem.*(?<!SearchItem)&apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+ url script-response-body https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_enhancer_quanx.js
 ^https?://api\.letterboxd\.com/api/v0/log-entries.+&apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+ url script-response-body https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_enhancer_quanx.js
 ^https?://api\.letterboxd\.com/api/v0/log-entry/[a-zA-Z0-9]+\?apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+ url script-response-body https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_enhancer_quanx.js
 ^https?://api\.letterboxd\.com/api/v0/films\?.+&apikey=[a-zA-Z0-9-]+&nonce=[a-zA-Z0-9-]+&timestamp=[0-9]+&signature=[a-zA-Z0-9]+ url script-response-body https://raw.githubusercontent.com/estost/surge_mitm/master/letterboxd_enhancer_quanx.js
