@@ -25,17 +25,43 @@ const $tool = new Tool();
 const consoleLog = false;
 
 var obj = JSON.parse($response.body);
+const re_seaFilm = 'FilmSearchItem';
+const re_seaList = 'ListSearchItem';
 const re_title = '/api/v0/film/';
 const re_poster = '/api/v0/list/';
 const re_list = '/api/v0/lists?';
 const re_cont = '/api/v0/contributor/';
-const re_search = '/api/v0/search?';
 const re_entries = '/api/v0/log-entries?';
 const re_entry = '/api/v0/log-entry/';
 const re_watched = '/api/v0/films?';
 const re_watlist = '/watchlist?';
 
-if ($request.url.indexOf(re_title) != -1) {
+if ($request.url.indexOf(re_seaFilm) !== -1) {
+    obj.items.forEach(function (sea_item) {
+        if (sea_item.film.adult) {
+            let poster = sea_item.film.poster;
+            let a_sizes = sea_item.film.adultPoster.sizes;
+            poster.sizes = a_sizes;
+        }
+    });
+    $done({body: JSON.stringify(obj)});
+}
+
+if ($request.url.indexOf(re_seaList) !== -1) {
+    obj.items.forEach(function (item) {
+        let sea_item_list = item.list;
+        sea_item_list.previewEntries.forEach(function (tit_item) {
+            if (tit_item.film.adult) {
+                let poster = tit_item.film.poster;
+                let a_sizes = tit_item.film.adultPoster.sizes;
+                poster.sizes = a_sizes;
+            }
+        });
+    });
+    $done({body: JSON.stringify(obj)});
+}
+
+if ($request.url.indexOf(re_title) !== -1) {
     if (consoleLog) console.log("Letterboxd Original Body:\n" + $response.body);
     if (obj.links[2].type === "imdb") {
         const imdb_id = obj.links[2].id;
@@ -95,7 +121,7 @@ if ($request.url.indexOf(re_title) != -1) {
     }
 }
 
-if ($request.url.indexOf(re_poster) != -1) {
+if ($request.url.indexOf(re_poster) !== -1) {
     obj.items.forEach(function (item) {
         if (item.film.adult) {
             let poster = item.film.poster;
@@ -106,7 +132,7 @@ if ($request.url.indexOf(re_poster) != -1) {
     $done({body: JSON.stringify(obj)});
 }
 
-if ($request.url.indexOf(re_list) != -1) {
+if ($request.url.indexOf(re_list) !== -1) {
     obj.items.forEach(function (item) {
         item.previewEntries.forEach(function (tit_item) {
             if (tit_item.film.adult) {
@@ -119,7 +145,7 @@ if ($request.url.indexOf(re_list) != -1) {
     $done({body: JSON.stringify(obj)});
 }
 
-if ($request.url.indexOf(re_cont) != -1) {
+if ($request.url.indexOf(re_cont) !== -1) {
     obj.items.forEach(function (con_item) {
         if (con_item.film.adult) {
             let poster = con_item.film.poster;
@@ -130,18 +156,7 @@ if ($request.url.indexOf(re_cont) != -1) {
     $done({body: JSON.stringify(obj)});
 }
 
-if ($request.url.indexOf(re_search) != -1) {
-    obj.items.forEach(function (sea_item) {
-        if (sea_item.film.adult) {
-            let poster = sea_item.film.poster;
-            let a_sizes = sea_item.film.adultPoster.sizes;
-            poster.sizes = a_sizes;
-        }
-    });
-    $done({body: JSON.stringify(obj)});
-}
-
-if ($request.url.indexOf(re_entries) != -1) {
+if ($request.url.indexOf(re_entries) !== -1) {
     obj.items.forEach(function (ent_item) {
         if (ent_item.film.adult) {
             let poster = ent_item.film.poster;
@@ -152,7 +167,7 @@ if ($request.url.indexOf(re_entries) != -1) {
     $done({body: JSON.stringify(obj)});
 }
 
-if ($request.url.indexOf(re_entry) != -1) {
+if ($request.url.indexOf(re_entry) !== -1) {
     if (obj.film.adult) {
         let poster = obj.film.poster;
         let a_sizes = obj.film.adultPoster.sizes;
@@ -161,7 +176,7 @@ if ($request.url.indexOf(re_entry) != -1) {
     $done({body: JSON.stringify(obj)});
 }
 
-if ($request.url.indexOf(re_watched) != -1) {
+if ($request.url.indexOf(re_watched) !== -1) {
     obj.items.forEach(function (wat_item) {
         if (wat_item.adult) {
             let poster = wat_item.poster;
@@ -172,7 +187,7 @@ if ($request.url.indexOf(re_watched) != -1) {
     $done({body: JSON.stringify(obj)});
 }
 
-if ($request.url.indexOf(re_watlist) != -1) {
+if ($request.url.indexOf(re_watlist) !== -1) {
     obj.items.forEach(function (wli_item) {
         if (wli_item.adult) {
             let poster = wli_item.poster;
@@ -190,7 +205,7 @@ function requestDoubanInfo(imdbId) {
         $tool.get(url, function (error, response, data) {
             if (!error) {
                 if (consoleLog) console.log("Letterboxd Douban Data:\n" + data);
-                if (response.status == 200) {
+                if (response.status === 200) {
                     const douban_data = get_douban_info(data);
                     resolve(douban_data);
                 } else {
